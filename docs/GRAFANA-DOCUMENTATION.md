@@ -1,6 +1,6 @@
 # Grafana Documentation <!-- omit in toc -->
 
-Visit the Grafana instance at http://localhost:3000 (the default credentials are user `admin` and password `admin`)..
+Visit the Grafana instance at http://localhost:3000 (the default credentials are user `admin` and password `admin`).
 
 > If you keep this demo local to your PC, when prompted to update your password on first login, you can just keep `admin`.
 
@@ -20,8 +20,8 @@ Visit the Grafana instance at http://localhost:3000 (the default credentials are
 The dashboard is composed of three types of visualization panels
 
 - Stat
-- Stat (but configurable via the variables `start date`, `end date` and `group by` at the top)
-- Bar Chart
+- Stat (configurable via the variables `start date` and `end date` at the top of the dashboard)
+- Bar Chart (configurable via the variables `start date`, `end date` and `group by`)
 
 ## The Data Source
 

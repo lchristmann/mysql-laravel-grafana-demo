@@ -82,7 +82,7 @@ php artisan migrate:refresh --seed
 
 ## One-time Setup
 
-1. Copy the .env.dev.example file to .env and adjust any necessary environment variables:
+1. Copy the `.env.dev.example` file to `.env`:
 
 ```bash
 cp .env.example .env
