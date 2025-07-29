@@ -4,10 +4,18 @@ Visit the Grafana instance at http://localhost:3000 (the default credentials are
 
 > If you keep this demo local to your PC, when prompted to update your password on first login, you can just keep `admin`.
 
-In the left sidebar you'll find the
+## Table of Contents <!-- omit in toc -->
 
-- dashboard `MySQL-Laravel-Grafana-Demo` by clicking on "Dashboards"
-- data source `mysql-laravel-grafana-demo-api` by clicking on "Connections" > "Data sources"
+- [The Dashboard](#the-dashboard)
+- [The Data Source](#the-data-source)
+- [Configuration as Code](#configuration-as-code)
+  - [Export the Configuration](#export-the-configuration)
+
+## The Dashboard
+
+> Navigation: Dashboards > "MySQL-Laravel-Grafana-Demo"
+
+![Screenshot of the Grafana Dashboard](dashboard-screenshot.png)
 
 The dashboard is composed of three types of visualization panels
 
@@ -15,10 +23,20 @@ The dashboard is composed of three types of visualization panels
 - Stat (but configurable via the variables `start date`, `end date` and `group by` at the top)
 - Bar Chart
 
-## Table of Contents <!-- omit in toc -->
+## The Data Source
 
-- [Configuration as Code](#configuration-as-code)
-  - [Export the Configuration](#export-the-configuration)
+The source of the data here is our Laravel JSON API.
+
+Grafana offers a variety of Plugins to easily consume data -
+in this case (a REST API endpoint serving JSON data) the best fit is the [Infinity data source plugin](https://grafana.com/docs/plugins/yesoreyeram-infinity-datasource/latest/),
+which is already installed in the Grafana instance here, by having passed the environment variable
+`GF_INSTALL_PLUGINS=yesoreyeram-infinity-datasource` on the Grafana Docker container.
+
+> Navigation: Connections > Data sources > "mysql-laravel-grafana-demo-api"
+
+![Screenshot of the Data Source for the Grafana Dashboard](datasource-screenshot.png)
+
+I just configured the Base URL `http://web/api/metrics/` and the custom HTTP header `Accept: application/json`.
 
 ## Configuration as Code
 
