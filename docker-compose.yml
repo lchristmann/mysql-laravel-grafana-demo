@@ -104,6 +104,8 @@ services:
             - GF_SERVER_ROOT_URL=http://localhost:3000/
             - GF_INSTALL_PLUGINS=yesoreyeram-infinity-datasource
         volumes:
+            - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+            - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
             - grafana-data:/var/lib/grafana
         networks:
             - laravel-development
