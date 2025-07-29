@@ -115,6 +115,16 @@ php artisan migrate:fresh --seed
 docker compose exec workspace php artisan key:generate
 ```
 
-6. Access the API (e.g. http://localhost/api/metrics/qes/total-unlocked-users)
+6. Access the API (e.g. [http://localhost/api/metrics/qes/total-unlocked-users](http://localhost/api/metrics/qes/total-unlocked-users))
 
-Visit the [API Documentation](docs/API-DOCUMENTATION.md), which has a link to the public Postman collection.
+Just make sure that it works (i.e. it returns some JSON response) - you can use your browser here.
+
+If it doesn't work yet, ensure that
+
+- you have `http` not `https` in the URL scheme
+- all 6 Docker Compose services are up and running (`docker compose ps`)
+  - in case some are missing, re-run `docker compose up -d`
+
+7. Visit the Grafana Dashboard
+
+See the [Grafana Documentation](docs/GRAFANA-DOCUMENTATION.md).
