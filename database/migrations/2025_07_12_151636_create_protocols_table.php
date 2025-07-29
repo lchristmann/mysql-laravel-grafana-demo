@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('protocols', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
+            $table->unsignedBigInteger('user_id');
             $table->string('title');
             $table->timestamp('signed_with_qes_at')->nullable();
             $table->timestamps();

@@ -56,13 +56,13 @@ class QESMetricsController extends Controller
         };
 
         $format = match ($grouping) {
-            'month' => 'YYYY-MM',
-            'week' => 'IYYY-"W"IW', // ISO week format IYYYIW with '-W' put into it, e.g. 2025-W24
-            default => 'YYYY-MM-DD',
+            'month' => '%Y-%m',     // e.g. 2025-07
+            'week' => '%x-W%v',     // e.g. 2025-W30 (ISO week)
+            default => '%Y-%m-%d',  // e.g. 2025-07-29
         };
 
         $query = Protocol::selectRaw("
-                TO_CHAR(signed_with_qes_at, ?) as period,
+                DATE_FORMAT(signed_with_qes_at, ?) as period,
                 COUNT(*) as count
             ", [$format])
             ->whereBetween('signed_with_qes_at', [$from, $to])

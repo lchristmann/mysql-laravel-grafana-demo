@@ -10,6 +10,10 @@ class Valuation extends Model
 {
     use HasFactory;
 
+    protected $connection = 'mysql';
+
+    protected $table = 'app.valuations';
+
     protected $fillable = [
         'price_in_cents',
         'created_at',

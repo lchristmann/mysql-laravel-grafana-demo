@@ -10,6 +10,10 @@ class Protocol extends Model
 {
     use HasFactory;
 
+    protected $connection = 'mysql';
+
+    protected $table = 'app.protocols';
+
     protected $fillable = [
         'title',
         'signed_with_qes_at',

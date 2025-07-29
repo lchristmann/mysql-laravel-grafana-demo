@@ -43,8 +43,8 @@ services:
         networks:
             - laravel-development
         depends_on:
-            postgres:
-                condition: service_started  # Wait for postgres to start
+            mysql:
+                condition: service_started  # Wait for mysql to start
 
     workspace:
         # For the workspace service, we will also create a custom image to install and setup all the necessary stuff.
@@ -69,16 +69,28 @@ services:
         networks:
             - laravel-development
 
-    postgres:
-        image: postgres:16
-        ports:
-            - "${POSTGRES_PORT:-5432}:5432"
+    mysql:
+        image: mysql:9.3.0
+        # the MySQL default port is 3306, we don't need to expose it to our local machine
         environment:
-            - POSTGRES_DB=app
-            - POSTGRES_USER=laravel
-            - POSTGRES_PASSWORD=secret
+            MYSQL_USER: laravel
+            MYSQL_PASSWORD: secret
+            MYSQL_ROOT_PASSWORD: root
         volumes:
-            - postgres-data-development:/var/lib/postgresql/data
+            - "./database/initializations:/docker-entrypoint-initdb.d:ro" # Sync SQL files with container
+            - mysql-data:/var/lib/mysql
+        networks:
+            - laravel-development
+
+    phpmyadmin:
+        image: phpmyadmin:latest
+        ports:
+            - "8001:80"
+        environment:
+            - PMA_HOST=mysql
+            - PMA_PORT=3306
+        depends_on:
+            - mysql
         networks:
             - laravel-development
 
@@ -100,5 +112,5 @@ networks:
     laravel-development:
 
 volumes:
-    postgres-data-development:
+    mysql-data:
     grafana-data:

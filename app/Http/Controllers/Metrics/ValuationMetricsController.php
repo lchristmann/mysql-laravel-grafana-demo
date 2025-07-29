@@ -56,13 +56,13 @@ class ValuationMetricsController extends Controller
         };
 
         $format = match ($grouping) {
-            'month' => 'YYYY-MM',
-            'week' => 'IYYY-"W"IW', // ISO week format IYYYIW with '-W' put into it, e.g. 2025-W24
-            default => 'YYYY-MM-DD',
+            'month' => '%Y-%m',     // e.g. 2025-07
+            'week' => '%x-W%v',     // e.g. 2025-W30 (ISO week)
+            default => '%Y-%m-%d',  // e.g. 2025-07-29
         };
 
         $query = Valuation::selectRaw("
-                TO_CHAR(created_at, ?) as period,
+                DATE_FORMAT(created_at, ?) as period,
                 COUNT(*) as count
             ", [$format])
             ->whereBetween('created_at', [$from, $to])

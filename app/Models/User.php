@@ -12,6 +12,10 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    protected $connection = 'mysql_users';
+
+    protected $table = 'users.users';
+
     public function parent(): BelongsTo
     {
         return $this->belongsTo(User::class, 'parent_user_id');

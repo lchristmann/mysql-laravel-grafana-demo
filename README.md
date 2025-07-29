@@ -1,7 +1,7 @@
 # MySQL Laravel Grafana Demo <!-- omit in toc -->
 
 ![](https://badgen.net/badge/Docker%20Compose/2.36.2/cyan)
-![](https://badgen.net/badge/MySQL/8.4/blue)
+![](https://badgen.net/badge/MySQL/9.3/blue)
 ![](https://badgen.net/badge/Laravel/12/red)
 ![](https://badgen.net/badge/Grafana/12/orange)
 
@@ -14,16 +14,25 @@ This project shall demonstrate a setup with
 Content-wise, the example is geared towards a fictional business, that has users (that can have sub-users),
 protocols that are created and partially signed with QES ([Qualified Electronic Signature](https://en.wikipedia.org/wiki/Qualified_electronic_signature)), and valuations (of products) being done.
 
+## Todo Next <!-- omit in toc -->
+
+- create a Grafana dashboard, export as JSON, mount it with volume so it's created automatically
+- write a section on the limitations of this demo and what could only be solved using e.g. Prometheus
+
 ## Table of Contents <!-- omit in toc -->
 
 - [Tech Stack](#tech-stack)
 - [Architecture](#architecture)
   - [Database Schema](#database-schema)
   - [API Schema](#api-schema)
+  - [Grafana](#grafana)
 - [Start and Stop](#start-and-stop)
 - [One-time Setup](#one-time-setup)
 - [Database Access \& Data (from Seeding) Explained](#database-access--data-from-seeding-explained)
-  - [Example Query](#example-query)
+  - [Running Migrations (Special here!)](#running-migrations-special-here)
+  - [Regarding the Seeded Data](#regarding-the-seeded-data)
+  - [Example Queries](#example-queries)
+  - [Important Adaption of Eloquent Models](#important-adaption-of-eloquent-models)
 
 ## Tech Stack
 
@@ -88,6 +97,7 @@ composer install
 
 ```bash
 docker compose exec workspace bash
+php artisan db:drop-users-table # not relevant on first ever migration
 php artisan migrate:fresh --seed
 ```
 
@@ -103,18 +113,27 @@ Visit the [API Documentation](docs/API-DOCUMENTATION.md), which has a link to th
 
 ## Database Access & Data (from Seeding) Explained
 
-You can of course access the database via Laravel, but if you want to view it directly, here you go:
+I added PhpMyAdmin, which you can access on http://localhost:8001 with username `laravel` and password `secret`.
+
+### Running Migrations (Special here!)
+
+When you `migrate:fresh`, it only drops the tables of the default connection `mysql` (with the `app` database).
+So you have to drop the `users` table in the `users` database by running an extra Artisan command as shown below. 
 
 ```shell
-docker compose exec postgres bash
-psql -d app -U laravel
+docker compose exec workspace bash
+php artisan db:drop-users-table
+php artisan migrate:fresh --seed
 ```
 
+After that you can re-create the database and re-seed with `migrate:refresh --seed` - it drops, recreates and seeds the `users` table correctly. 
+
 ```shell
-\dt
-\d users
-SELECT * FROM users LIMIT 10;
+docker compose exec workspace bash
+php artisan migrate:refresh --seed
 ```
+
+### Regarding the Seeded Data
 
 Notes on what data was created during seeding:
 
@@ -126,9 +145,13 @@ Definitions:
 
 - active user: `last_login` during the last 30 days 
 
-### Example Query
+### Example Queries
 
-Show all users who have sub-users, odered by the count of sub-users.
+You can simply run the queries in the "SQL" Tab in PhpMyAdmin.
+
+**Show all users who have sub-users, odered by the count of sub-users.**
+
+> Run this query having selected the `users` database.
 
 ```sql
 SELECT
@@ -141,3 +164,20 @@ GROUP BY u.id, u.name
 HAVING COUNT(c.id) > 0
 ORDER BY child_count DESC;
 ```
+
+**Show users along with and sorted by how many protocols they have.**
+
+> This query uses two tables from different databases: `users.users` and `app.protocols`. Run it anywhere.
+
+```sql
+SELECT u.id, u.name, u.email, COUNT(*) AS protocols_count
+FROM users.users u
+LEFT JOIN app.protocols p ON u.id = p.user_id
+GROUP BY u.id, u.name, u.email
+ORDER BY protocols_count DESC;
+```
+
+### Important Adaption of Eloquent Models
+
+I had to add the fully qualified table name (like `protected $table = 'app.protocols';` to all the models,
+or else the relations (like in `User::whereHas(Protocol:class)` wouldn't work - [as can be read here](https://laracasts.com/discuss/channels/eloquent/how-to-properly-use-2-database-relationships)).

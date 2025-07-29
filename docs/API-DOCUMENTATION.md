@@ -1,8 +1,8 @@
 # QES Metrics API Documentation <!-- omit in toc -->
 
-[<img src="https://run.pstmn.io/button.svg" alt="Run In Postman" style="width: 128px; height: 32px;">](https://god.gw.postman.com/run-collection/28599065-6d8cc4dc-d71b-4d7c-bf60-d91052cc3a89?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D28599065-6d8cc4dc-d71b-4d7c-bf60-d91052cc3a89%26entityType%3Dcollection%26workspaceId%3D16642c6e-6a2d-4f9a-a351-8d01b09b6246)
+[<img src="https://run.pstmn.io/button.svg" alt="Run In Postman" style="width: 128px; height: 32px;">](https://app.getpostman.com/run-collection/28599065-6d8cc4dc-d71b-4d7c-bf60-d91052cc3a89?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D28599065-6d8cc4dc-d71b-4d7c-bf60-d91052cc3a89%26entityType%3Dcollection%26workspaceId%3D16642c6e-6a2d-4f9a-a351-8d01b09b6246)
 
-You can also visit the public Postman collection via [this link](https://www.postman.com/lchristmann/lchristmann/collection/leg883u/beta-feature-dashboard-demo).
+You can also visit the public Postman collection via [this link](https://www.postman.com/lchristmann/workspace/lchristmann/collection/28599065-6d8cc4dc-d71b-4d7c-bf60-d91052cc3a89?action=share&creator=28599065).
 
 ## Table of Contents <!-- omit in toc -->
 
