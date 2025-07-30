@@ -16,7 +16,6 @@ protocols that are created and partially signed with QES ([Qualified Electronic 
 
 ## Todo Next <!-- omit in toc -->
 
-- write a section on the limitations of this demo and what could only be solved using e.g. Prometheus
 - maybe add some tests for the API
 
 ## Table of Contents <!-- omit in toc -->
@@ -39,6 +38,10 @@ protocols that are created and partially signed with QES ([Qualified Electronic 
   - using the [Grafana Infinity data source plugin](https://grafana.com/docs/plugins/yesoreyeram-infinity-datasource/latest/)
 
 With the [Docker Compose](https://docs.docker.com/compose/) setup being based on my [lchristmann/selfhosted-tracker-backend](https://github.com/lchristmann/selfhosted-tracker-backend) project, which already implements a JSON API, and is itself based on the official [Docker Compose Laravel setup](https://docs.docker.com/guides/frameworks/laravel/) example.
+
+> Note: for a live system a third MySQL database could expand what's possible to visualize by enabling historic data that goes beyond what the business data already offers.
+> One would therefor [schedule a recurring task in Laravel](https://laravel.com/docs/12.x/scheduling), that runs queries on the two MySQL DBs
+> and stores the result in the third MySQL DB along with a date or timestamp.
 
 ## Architecture
 
@@ -125,6 +128,8 @@ If it doesn't work yet, ensure that
 - all 6 Docker Compose services are up and running (`docker compose ps`)
   - in case some are missing, re-run `docker compose up -d`
 
-7. Visit the Grafana Dashboard
+Also see the [API Documentation](docs/API-DOCUMENTATION.md).
 
-See the [Grafana Documentation](docs/GRAFANA-DOCUMENTATION.md).
+7. Visit the [Grafana Dashboard](http://localhost:3000/d/fb6c8c15-7315-43e0-af17-d5fc0995955d/mysql-laravel-grafana-demo)
+
+Also see the [Grafana Documentation](docs/GRAFANA-DOCUMENTATION.md).
