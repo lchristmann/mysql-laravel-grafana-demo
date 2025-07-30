@@ -35,7 +35,7 @@ php artisan migrate:refresh --seed
 Notes on what data was created during seeding:
 
 - 60 users + 20 to 40 sub-users (created randomly between 1 and 2 years ago; last_login has happened with 80% chance during the last 9 days)
-- 400 protocols (created randomly during the last year; 50% they're signed with QES (by a user that is activated for QES))
+- 400 protocols (created randomly during the last year; 50% chance they're signed with QES (by a user that is activated for QES))
 - 400 valuations (created randomly during the last year (for a user that is activated for taxierungen))
 
 Definitions:
@@ -46,7 +46,7 @@ Definitions:
 
 You can simply run the queries in the "SQL" Tab in PhpMyAdmin.
 
-**Show all users who have sub-users, odered by the count of sub-users.**
+**Show all users who have sub-users, ordered by the count of sub-users.**
 
 > Run this query having selected the `users` database.
 
@@ -76,5 +76,5 @@ ORDER BY protocols_count DESC;
 
 ## Adaption of Eloquent Models
 
-I had to add the fully qualified table name (like `protected $table = 'app.protocols';` to all the models,
+I had to add the fully qualified table name (like `protected $table = 'app.protocols';`) to all the models,
 or else the relations (like in `User::whereHas(Protocol:class)` wouldn't work - [as can be read here](https://laracasts.com/discuss/channels/eloquent/how-to-properly-use-2-database-relationships)).

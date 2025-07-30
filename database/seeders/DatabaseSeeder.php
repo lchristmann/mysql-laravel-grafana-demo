@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Protocol;
-use App\Models\Valuation;
 use App\Models\User;
+use App\Models\Valuation;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder

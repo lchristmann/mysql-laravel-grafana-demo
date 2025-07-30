@@ -14,10 +14,6 @@ This project shall demonstrate a setup with
 Content-wise, the example is geared towards a fictional business, that has users (that can have sub-users),
 protocols that are created and partially signed with QES ([Qualified Electronic Signature](https://en.wikipedia.org/wiki/Qualified_electronic_signature)), and valuations (of products) being done.
 
-## Todo Next <!-- omit in toc -->
-
-- maybe add some tests for the API
-
 ## Table of Contents <!-- omit in toc -->
 
 - [Tech Stack](#tech-stack)
@@ -28,6 +24,7 @@ protocols that are created and partially signed with QES ([Qualified Electronic 
 - [Start and Stop](#start-and-stop)
   - [Renew the data](#renew-the-data)
 - [One-time Setup](#one-time-setup)
+- [Testing](#testing)
 
 ## Tech Stack
 
@@ -133,3 +130,36 @@ Also see the [API Documentation](docs/API-DOCUMENTATION.md).
 7. Visit the [Grafana Dashboard](http://localhost:3000/d/fb6c8c15-7315-43e0-af17-d5fc0995955d/mysql-laravel-grafana-demo)
 
 Also see the [Grafana Documentation](docs/GRAFANA-DOCUMENTATION.md).
+
+## Testing
+
+I've written the API's tests using the [Pest](https://pestphp.com/) framework, which is built on PHPUnit.
+
+> The tests are based on the seeding, but robust enough to avoid flakiness.<br>
+> If some, like the `qes/active-users` fail, make sure you've re-run the seeding sometime in the last 21 days.
+
+Execute the tests:
+
+```shell
+docker compose exec workspace bash
+php artisan test
+```
+
+As shown in the Laravel docs on [Running tests](https://laravel.com/docs/12.x/testing#running-tests), you can run tests
+[in parallel](https://laravel.com/docs/12.x/testing#running-tests-in-parallel), [with coverage](https://laravel.com/docs/12.x/testing#reporting-test-coverage)
+or [list the ten slowest](https://laravel.com/docs/12.x/testing#profiling-tests):
+
+```shell
+docker compose exec workspace bash
+php artisan test --parallel
+```
+
+```shell
+docker compose exec workspace bash
+php artisan test --coverage
+```
+
+```shell
+docker compose exec workspace bash
+php artisan test --profile
+```
