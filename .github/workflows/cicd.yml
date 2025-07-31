@@ -1,0 +1,62 @@
+name: CI/CD Pipeline
+
+on: [push]
+
+jobs:
+  tests:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create .env file
+        run: cp .env.example .env
+
+      - name: Start Docker Compose services in the background
+        run: docker compose -f docker-compose.yml up -d
+
+      - name: Wait for Docker Compose services to be ready (i.e. ensure containers are up)
+        run: |
+          services="$(docker compose ps --services)"
+          timeout=300
+          interval=3
+          elapsed=0
+
+          while true; do
+            running="$(docker compose ps --services --filter 'status=running')"
+            if [ "$running" = "$services" ]; then
+              echo "All services are running"
+              break
+            fi
+
+            echo "Waiting for services to start..."
+            comm -13 <(sort <<<"$running") <(sort <<<"$services")
+            sleep "$interval"
+            elapsed=$((elapsed + interval))
+            if [ "$elapsed" -ge "$timeout" ]; then
+              echo "Timeout reached. Not all services started:"
+              comm -13 <(sort <<<"$running") <(sort <<<"$services")
+              exit 1
+            fi
+          done
+
+      - name: Install Laravel dependencies
+        run: docker compose exec workspace composer install
+
+      - name: Run Migrations and Seeding
+        run: |
+          docker compose exec workspace bash
+          php artisan db:drop-users-table
+          php artisan migrate:fresh --seed
+
+      - name: Generate Application Key
+        run: docker compose exec workspace php artisan key:generate
+
+      - name: Run tests with coverage and generate reports
+        run: php artisan test --coverage-clover=build/coverage-clover.xml --log-junit build/junit-report.xml
+
+      - name: Archive test results and code coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-and-code-coverage-report
+          path: build/*
