@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Metrics;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Metrics\TimePeriodBoundRequest;
 use App\Models\Protocol;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class QESMetricsController extends Controller
 {
@@ -19,12 +19,12 @@ class QESMetricsController extends Controller
     }
 
     // 2. Number of active users with at least one QES-signed protocol in the given time period
-    public function activeUsers(Request $request): JsonResponse
+    public function activeUsers(TimePeriodBoundRequest $request): JsonResponse
     {
-        $from = $request->input('from');    // expected: ISO 8601
-        $to = $request->input('to');        // expected: ISO 8601
-
-        $count = User::unlockedForQes()->active()->hasProtocolsInTimeRange($from, $to)->count();
+        $count = User::active()
+            ->unlockedForQes()
+            ->hasProtocolsInTimeRange($request->input('from'), $request->input('to'))
+            ->count();
 
         return response()->json(['count' => $count]);
     }
@@ -38,28 +38,13 @@ class QESMetricsController extends Controller
     }
 
     // 4. Number of QES-signed protocols in the given time period grouped by day/week/month
-    public function signedProtocolsOverTime(Request $request): JsonResponse
+    public function signedProtocolsOverTime(TimePeriodBoundRequest $request): JsonResponse
     {
-        $from = $request->input('from');    // expected: ISO 8601
-        $to = $request->input('to');        // expected: ISO 8601
-
-        $grouping = match ($request->input('group_by', 'day')) {
-            'month' => 'month',
-            'week' => 'week',
-            default => 'day',
-        };
-
-        $format = match ($grouping) {
-            'month' => '%Y-%m',     // e.g. 2025-07
-            'week' => '%x-W%v',     // e.g. 2025-W30 (ISO week)
-            default => '%Y-%m-%d',  // e.g. 2025-07-29
-        };
-
         $query = Protocol::selectRaw("
                 DATE_FORMAT(signed_with_qes_at, ?) as period,
                 COUNT(*) as count
-            ", [$format])
-            ->signedWithQESInTimeRange($from, $to)
+            ", [$request->dateFormatToGroupBy()])
+            ->signedWithQESInTimeRange($request->input('from'), $request->input('to'))
             ->groupBy('period')
             ->orderBy('period');
 
