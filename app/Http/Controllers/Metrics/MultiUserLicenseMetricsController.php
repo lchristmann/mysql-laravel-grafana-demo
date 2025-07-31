@@ -14,7 +14,7 @@ class MultiUserLicenseMetricsController extends Controller
     public function totalSubUsers(): JsonResponse
     {
         return response()->json([
-            'count' => User::whereNotNull('parent_user_id')->count()
+            'count' => User::subuser()->count()
         ]);
     }
 
@@ -24,9 +24,7 @@ class MultiUserLicenseMetricsController extends Controller
         $from = $request->input('from');    // expected: ISO 8601
         $to = $request->input('to');        // expected: ISO 8601
 
-        $count = User::whereNotNull('parent_user_id')
-            ->whereBetween('last_login', [$from, $to])
-            ->count();
+        $count = User::subuser()->activeInTimeRange($from, $to)->count();
 
         return response()->json(['count' => $count]);
     }
@@ -37,12 +35,7 @@ class MultiUserLicenseMetricsController extends Controller
         $from = $request->input('from'); // expected: ISO 8601
         $to = $request->input('to');     // expected: ISO 8601
 
-        $count = Protocol::whereNotNull('signed_with_qes_at')
-            ->whereBetween('signed_with_qes_at', [$from, $to])
-            ->whereHas('user', function ($query) {
-                $query->whereNotNull('parent_user_id');
-            })
-            ->count();
+        $count = Protocol::signedWithQESInTimeRange($from, $to)->subuser()->count();
 
         return response()->json(['count' => $count]);
     }

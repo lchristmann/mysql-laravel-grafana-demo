@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Models\Valuation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 
 class ValuationMetricsController extends Controller
 {
@@ -15,7 +14,7 @@ class ValuationMetricsController extends Controller
     public function totalUnlockedUsers(): JsonResponse
     {
         return response()->json([
-            'count' => User::where('unlocked_for_valuation', true)->count()
+            'count' => User::unlockedForValuation()->count()
         ]);
     }
 
@@ -25,12 +24,7 @@ class ValuationMetricsController extends Controller
         $from = $request->input('from');    // expected: ISO 8601
         $to = $request->input('to');        // expected: ISO 8601
 
-        $count = User::where('unlocked_for_valuation', true)
-            ->where('last_login', '>=', Carbon::now()->subDays(30))
-            ->whereHas('valuations', function ($query) use ($from, $to) {
-                $query->whereBetween('created_at', [$from, $to]);
-            })
-            ->count();
+        $count = User::unlockedForValuation()->active()->hasValuationsInTimeRange($from, $to)->count();
 
         return response()->json(['count' => $count]);
     }
@@ -65,7 +59,7 @@ class ValuationMetricsController extends Controller
                 DATE_FORMAT(created_at, ?) as period,
                 COUNT(*) as count
             ", [$format])
-            ->whereBetween('created_at', [$from, $to])
+            ->createdInTimeRange($from, $to)
             ->groupBy('period')
             ->orderBy('period');
 

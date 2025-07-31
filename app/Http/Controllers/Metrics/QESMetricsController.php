@@ -7,7 +7,6 @@ use App\Models\Protocol;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 
 class QESMetricsController extends Controller
 {
@@ -15,7 +14,7 @@ class QESMetricsController extends Controller
     public function totalUnlockedUsers(): JsonResponse
     {
         return response()->json([
-            'count' => User::where('unlocked_for_qes', true)->count()
+            'count' => User::unlockedForQes()->count()
         ]);
     }
 
@@ -25,12 +24,7 @@ class QESMetricsController extends Controller
         $from = $request->input('from');    // expected: ISO 8601
         $to = $request->input('to');        // expected: ISO 8601
 
-        $count = User::where('unlocked_for_qes', true)
-            ->where('last_login', '>=', Carbon::now()->subDays(30))
-            ->whereHas('protocols', function ($query) use ($from, $to) {
-                $query->whereBetween('signed_with_qes_at', [$from, $to]);
-            })
-            ->count();
+        $count = User::unlockedForQes()->active()->hasProtocolsInTimeRange($from, $to)->count();
 
         return response()->json(['count' => $count]);
     }
@@ -39,7 +33,7 @@ class QESMetricsController extends Controller
     public function totalSignedProtocols(): JsonResponse
     {
         return response()->json([
-            'count' => Protocol::whereNotNull('signed_with_qes_at')->count()
+            'count' => Protocol::signedWithQES()->count()
         ]);
     }
 
@@ -65,7 +59,7 @@ class QESMetricsController extends Controller
                 DATE_FORMAT(signed_with_qes_at, ?) as period,
                 COUNT(*) as count
             ", [$format])
-            ->whereBetween('signed_with_qes_at', [$from, $to])
+            ->signedWithQESInTimeRange($from, $to)
             ->groupBy('period')
             ->orderBy('period');
 

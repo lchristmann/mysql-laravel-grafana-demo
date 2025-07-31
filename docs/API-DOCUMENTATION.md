@@ -261,7 +261,7 @@ Returns number of sub-users who logged in during the given date range.
 **Example Request:**
 
 ```
-GET /api/metrics/multi-user-license/active-sub-users?from=2024-04-01&to=2025-04-01
+GET /api/metrics/multi-user-license/active-sub-users?from=2024-04-01&to=2025-07-01
 ```
 
 **Response:**
