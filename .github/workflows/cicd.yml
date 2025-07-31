@@ -18,7 +18,7 @@ jobs:
       - name: Wait for Docker Compose services to be ready (i.e. ensure containers are up)
         run: |
           services="$(docker compose ps --services)"
-          timeout=300
+          timeout=720
           interval=3
           elapsed=0
 
