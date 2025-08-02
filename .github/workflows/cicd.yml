@@ -15,6 +15,9 @@ jobs:
       - name: Start Docker Compose services in the background
         run: docker compose -f docker-compose.yml up -d
 
+      - name: Check all services are running
+        run: docker compose ps --services --filter 'status=running'; exit 0;
+
       - name: Wait for Docker Compose services to be ready (i.e. ensure containers are up)
         run: |
           services="$(docker compose ps --services)"
