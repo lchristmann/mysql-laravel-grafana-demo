@@ -13,10 +13,10 @@ jobs:
         run: cp .env.example .env
 
       - name: Start Docker Compose services (first attempt)
-        run: docker compose -f docker-compose.yml up -d
+        run: docker compose -f docker-compose.yml up -d --wait
 
       - name: Retry Docker Compose up to ensure all services are up
-        run: docker compose -f docker-compose.yml up -d
+        run: docker compose -f docker-compose.yml up -d --wait
 
       - name: Wait until all services are running
         run: |
