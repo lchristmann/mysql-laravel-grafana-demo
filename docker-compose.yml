@@ -76,6 +76,11 @@ services:
             MYSQL_USER: laravel
             MYSQL_PASSWORD: secret
             MYSQL_ROOT_PASSWORD: root
+        healthcheck:
+            test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+            interval: 5s
+            timeout: 20s
+            retries: 10
         volumes:
             - "./database/initializations:/docker-entrypoint-initdb.d:ro" # Sync SQL files with container
             - mysql-data:/var/lib/mysql
