@@ -13,35 +13,32 @@ jobs:
         run: cp .env.example .env
 
       - name: Start Docker Compose services (first attempt)
-        run: docker compose -f docker-compose.yml up -d --wait
+        run: docker compose -f cicd.docker-compose.yml up -d --build --wait
 
       - name: Retry Docker Compose up to ensure all services are up
-        run: docker compose -f docker-compose.yml up -d --wait
+        run: docker compose -f cicd.docker-compose.yml up -d --wait
 
-      - name: Wait until all services are running
+      - name: Wait for Docker Compose services to be ready (i.e. ensure containers are up)
         run: |
-          expected_count=6
-          timeout=180
-          interval=5
+          services="$(docker compose -f cicd.docker-compose.yml ps --services)"
+          timeout=60
+          interval=3
           elapsed=0
 
-          echo "Waiting for $expected_count services to be running..."
-
           while true; do
-            running_count=$(docker compose ps --services --filter 'status=running' | wc -l)
-
-            if [ "$running_count" -eq "$expected_count" ]; then
-              echo "All $expected_count services are running"
+            running="$(docker compose -f cicd.docker-compose.yml ps --services --filter 'status=running')"
+            if [ "$running" = "$services" ]; then
+              echo "All services are running"
               break
             fi
 
-            echo "Currently running: $running_count/$expected_count"
+            echo "Waiting for services to start..."
+            comm -13 <(sort <<<"$running") <(sort <<<"$services")
             sleep "$interval"
             elapsed=$((elapsed + interval))
-
             if [ "$elapsed" -ge "$timeout" ]; then
-              echo "Timeout reached. These services are not running:"
-              comm -13 <(sort <<<"$(docker compose ps --services --filter 'status=running')") <(sort <<<"$(docker compose ps --services)")
+              echo "Timeout reached. Not all services started:"
+              comm -13 <(sort <<<"$running") <(sort <<<"$services")
               exit 1
             fi
           done
