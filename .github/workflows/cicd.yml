@@ -16,7 +16,13 @@ jobs:
         run: docker compose -f cicd.docker-compose.yml up -d || true
 
       - name: Wait a bit before retrying
-        run: sleep 5
+        run: docker compose -f cicd.docker-compose.yml ps --services; sleep 5
+
+      - name: Retry Docker Compose up to ensure all services are up
+        run: docker compose -f cicd.docker-compose.yml up -d || true
+
+      - name: Wait a bit before retrying
+        run: docker compose -f cicd.docker-compose.yml ps --services; sleep 5
 
       - name: Retry Docker Compose up to ensure all services are up
         run: docker compose -f cicd.docker-compose.yml up -d || true
