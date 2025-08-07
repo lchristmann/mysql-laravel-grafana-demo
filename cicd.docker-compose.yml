@@ -77,47 +77,14 @@ services:
             MYSQL_PASSWORD: secret
             MYSQL_ROOT_PASSWORD: root
         healthcheck:
-            test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
-            interval: 5s
-            timeout: 20s
-            retries: 10
+          test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+          interval: 5s
+          timeout: 20s
+          retries: 10
         volumes:
             - "./database/initializations:/docker-entrypoint-initdb.d:ro" # Sync SQL files with container
-            - mysql-data:/var/lib/mysql
-        networks:
-            - laravel-development
-
-    phpmyadmin:
-        image: phpmyadmin:latest
-        ports:
-            - "8001:80"
-        environment:
-            - PMA_HOST=mysql
-            - PMA_PORT=3306
-        depends_on:
-            - mysql
-        networks:
-            - laravel-development
-
-    grafana:
-        image: grafana/grafana-oss
-        container_name: grafana
-        restart: unless-stopped
-        ports:
-            - "3000:3000"
-        environment:
-            - GF_SERVER_ROOT_URL=http://localhost:3000/
-            - GF_INSTALL_PLUGINS=yesoreyeram-infinity-datasource
-        volumes:
-            - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
-            - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-            - grafana-data:/var/lib/grafana
         networks:
             - laravel-development
 
 networks:
     laravel-development:
-
-volumes:
-    mysql-data:
-    grafana-data:
