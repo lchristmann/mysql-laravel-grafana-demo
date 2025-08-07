@@ -145,21 +145,14 @@ docker compose exec workspace bash
 php artisan test
 ```
 
-As shown in the Laravel docs on [Running tests](https://laravel.com/docs/12.x/testing#running-tests), you can run tests
-[in parallel](https://laravel.com/docs/12.x/testing#running-tests-in-parallel), [with coverage](https://laravel.com/docs/12.x/testing#reporting-test-coverage)
-or [list the ten slowest](https://laravel.com/docs/12.x/testing#profiling-tests):
+Execute the tests and generate tests results and coverage reports into the `build` folder:
 
 ```shell
 docker compose exec workspace bash
-php artisan test --parallel
+php artisan test --log-junit build/junit-report.xml --coverage-clover=build/coverage-clover.xml
 ```
 
-```shell
-docker compose exec workspace bash
-php artisan test --coverage
-```
+> Pest supports reporting via various [test results](https://pestphp.com/docs/cli-api-reference#content-logging) and [code coverage](https://pestphp.com/docs/cli-api-reference#content-code-coverage) formats.
 
-```shell
-docker compose exec workspace bash
-php artisan test --profile
-```
+As shown in the Laravel docs on [Running tests](https://laravel.com/docs/12.x/testing#running-tests), you have further
+options like running tests [in parallel](https://laravel.com/docs/12.x/testing#running-tests-in-parallel) with `--parallel` or [listing the ten slowest](https://laravel.com/docs/12.x/testing#profiling-tests) with `--profile`.
